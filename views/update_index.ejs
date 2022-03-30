@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css"
+        rel="stylesheet"
+        integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3"
+        crossorigin="anonymous">
+    <script
+        src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p"
+        crossorigin="anonymous"></script>
+    <script
+        src="https://code.jquery.com/jquery-3.5.1.js"
+        integrity="sha256-QWo7LDvxbWT2tbbQ97B53yJnYU3WhH/C8ycbRAkjPDc="
+        crossorigin="anonymous"></script>
+        <title>Document</title>
+        <script>
+            //로그인을 한 유저면 버튼들을 보이거나 숨기고 함수를 실행한다.
+        $(document).ready(function () {
+            if(localStorage.getItem("token")){
+                $('#login').hide()
+                $('#join').hide()
+                $('#logout').show()
+                getSelf()
+            }else{
+                $('#login').show()
+                $('#join').show()
+                $('#logout').hide()
+            }
+       })
+       function getSelf() {
+                $.ajax({
+                    type: "GET",
+                    url: "/user/check",
+                    headers: {
+                        authorization: `Bearer ${localStorage.getItem("token")}`
+                    },
+                    success: function (response) {
+                        nickname = response.user.nickname
+                        showprofile(nickname)
+                    },
+                    error: function () {
+                    }
+                })
+            }
+            
+       function showprofile(name) {
+           let tempHtml = `<a class="nav-link" href="">${name}</a>`
+            $('.nickname').append(tempHtml)
+             }
+
+       function logout(){
+           localStorage.clear()
+           window.location.reload()
+       }
+        </script>
+    </head>
+    <body>
+        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+            <div class="container-fluid">
+                <a class="navbar-brand" href="/">항해 Log</a>
+                <button
+                    class="navbar-toggler"
+                    type="button"
+                    data-bs-toggle="collapse"
+                    data-bs-target="#navbarNav"
+                    aria-controls="navbarNav"
+                    aria-expanded="false"
+                    aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav">
+                        <li class="nav-item">
+                            <a class="nav-link active" aria-current="page" href="/">Home</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/create">Create</a>
+                        </li>
+                        <li class="nav-item nickname">
+                            
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+
+        <table class="table">
+            <thead>
+                <tr>
+                    <th scope="col">DATE</th>
+                    <th scope="col">TITLE</th>
+                    <th scope="col">NAME</th>
+                </tr>
+            </thead>
+            <tbody id="posting"></tbody>
+            <% post.forEach(posts => { %>   <!--post 데이터를 반복해서 나타내준다. -->
+                <tr onclick="location.href='/detail/<%=posts.id%>'">
+                    <td><%=posts.date %></td>
+                    <td><%=posts.title %></td>
+                    <td><%=posts.name %></td>
+                </tr>
+            <% }) %>
+        </table>
+        <button id="login" onclick="window.location.href='/login'" class="btn btn-outline-secondary" type="button">Login</button>
+        <button id="join" onclick="window.location.href='/join'" class="btn btn-outline-secondary button" type="button">Join</button>
+        <button id="logout" onclick="logout()" class="btn btn-outline-secondary button" type="button">Logout</button>
+    </body>
+</html>
